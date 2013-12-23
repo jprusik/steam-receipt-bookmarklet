@@ -4,7 +4,7 @@ if ((location.href === 'https://store.steampowered.com/account/') || ((location.
         var transaction = {
             'date':jQuery(this).find('.transactionRowDate').text(),
             'currency':jQuery(this).find('.transactionRowPrice').text().replace(/[\w\s-.,]/g, ''),
-            'price':Number(jQuery(this).find('.transactionRowPrice').text().replace(/[^\d.,-]/g, '').replace('\,','\.').split('.').splice(0,2).join('.')),
+            'price':Number(jQuery(this).find('.transactionRowPrice').text().replace(/[^\d.,-]/g, '').replace('\,','\.').replace('--','00').split('.').splice(0,2).join('.')),
             'event':jQuery(this).find('.transactionRowEvent').text(),
             'description':jQuery(this).find('.transactionRowEvent .transactionRowTitle').text(),
             'descriptionSub':jQuery(this).find('.transactionRowEvent .itemSubtext').text()
