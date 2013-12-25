@@ -9,14 +9,13 @@ Unfortunately, the transaction history isn't as straightforward as it could be. 
 
 Usage
 -----
-Simply create a new bookmark with the contents of the js file. When you're on your account page, click the bookmarklet to get a pop-up summary of your account spending.
+Simply create a new bookmark with the contents of the js file. When you're on your account page, click the bookmarklet to get a summary of your account spending.
 
 Limitations/Known Issues
 ------------------------
-Unfortunately, this script can only parse US accounts at the moment. Other currencies and languages further complicate parsing.
-
 Steam does track key redemptions (from game bundles, retail purchase, etc), but has no way of knowing how much you paid for it, so those costs are excluded.
 
 Author
 ------
 Jonathan Prusik @jprusik [www.classynemesis.com](http://www.classynemesis.com)
+Thomas Andresen
