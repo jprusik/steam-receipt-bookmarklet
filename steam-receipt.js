@@ -1,10 +1,10 @@
 if ((location.href === 'https://store.steampowered.com/account/') || ((location.href === 'https://store.steampowered.com/account'))) {
     var steamReceipt={'transactions':[], 'currencyList':[], 'currencyTotals':[], 'wallet':jQuery('.price')[0].innerHTML, 'transactionCount':0, 'externalCount':0, 'priceTotal':0, 'credits':0};
-    jQuery('.transactionRow').each(function(){
+    jQuery('#store_transactions .transactionRow').each(function(){
         var transaction = {
             'date':jQuery(this).find('.transactionRowDate').text(),
             'currency':jQuery(this).find('.transactionRowPrice').text().replace(/[\w\s-.,]/g, ''),
-            'price':Number(jQuery(this).find('.transactionRowPrice').text().replace(/[^\d.,-]/g, '').replace('\,','\.').split('.').splice(0,2).join('.')),
+            'price':Number(jQuery(this).find('.transactionRowPrice').text().replace('--', '00').replace(/[^\d.,-]/g, '').replace('\,','\.').split('.').splice(0,2).join('.')),
             'event':jQuery(this).find('.transactionRowEvent').text(),
             'description':jQuery(this).find('.transactionRowEvent .transactionRowTitle').text(),
             'descriptionSub':jQuery(this).find('.transactionRowEvent .itemSubtext').text()
