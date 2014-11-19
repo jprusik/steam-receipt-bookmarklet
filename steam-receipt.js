@@ -1,4 +1,4 @@
-if (location.href.match('store.steampowered.com/account/') && location.href.match(/store_transactions|ingame_transactions|market_transactions/i)){
+if (location.href.match('store.steampowered.com/account/')){
     var steamReceipt={'transactionsPage':location.href.split('/account/')[1].split('/')[0].split('?')[0], 'transactions':[], 'currencyList':[], 'currencyTotals':[], 'wallet':jQuery('.price')[0].innerHTML, 'transactionCount':0, 'externalCount':0, 'priceTotal':0, 'credits':0};
 
     jQuery('.transactionRow.even, .transactionRow.odd').each(function(){
@@ -56,5 +56,6 @@ if (location.href.match('store.steampowered.com/account/') && location.href.matc
     jQuery('head').append('<style type="text/css">#steam_gauge_wrapper{width:100%;margin:1em 0px;padding: 1em;background-color:slategray;}#steam_gauge_receipt{width:50%;float:left;}#steam_gauge_receipt_table{width:50%;float:right;border-width: 0px !important;border-collapse: collapse !important;}.sg_col1{text-align:right;}.sg_col2{text-align:left;padding-left: 0.5em;}.youraccount_tabs{clear:both;}</style>');
 }
 else{
-    window.alert('This script only works on Steam transaction pages under:\n\nhttps://store.steampowered.com/account/');
+    window.alert('I was unable to detect that you are on the right page, Please click the bookmarklet after this page fully loads.');
+    window.location.href = "https://store.steampowered.com/account/";
 }
