@@ -1,60 +1,45 @@
-if (location.href.match('store.steampowered.com/account/') && location.href.match(/store_transactions|ingame_transactions|market_transactions/i)){
-    var steamReceipt={'transactionsPage':location.href.split('/account/')[1].split('/')[0].split('?')[0], 'transactions':[], 'currencyList':[], 'currencyTotals':[], 'wallet':jQuery('.price')[0].innerHTML, 'transactionCount':0, 'externalCount':0, 'priceTotal':0, 'credits':0};
+if (!location.href.match('https://store.steampowered.com/account/history')) {
+    window.alert('This script only works on the Steam account history page at https://store.steampowered.com/account/history/\n**Make sure you scroll to the bottom of the page and keep clicking "Load More Transactions"**');
+} else {
+    var totals = {};
 
-    jQuery('.transactionRow.even, .transactionRow.odd').each(function(){
+    jQuery('.wallet_history_table .wallet_table_row').each(function() {
         var transaction = {
-            'date':jQuery(this).find('.transactionRowDate').text(),
-            'currency':jQuery(this).find('.transactionRowPrice').text().replace(/[\w\s-.,]/g, ''),
-            'price':Number(jQuery(this).find('.transactionRowPrice').text().replace(/[^\d.,-]/g, '').replace('\,','\.').replace(/-/g,'0').split('.').splice(0,2).join('.')),
-            'event':jQuery(this).find('.transactionRowEvent').text(),
-            'description':jQuery(this).find('.transactionRowEvent .transactionRowTitle').text(),
-            'descriptionSub':jQuery(this).find('.transactionRowEvent .itemSubtext').text()
+            date: jQuery('.wht_date', this).text(),
+            currency: jQuery('.wht_total', this).text().replace(/[^A-Za-z]/g, ''),
+            price: parseFloat(jQuery('.wht_total', this).text().replace(/[^0-9.,-]/g, '').replace(',', '.')),
+            payment: jQuery('.wth_payment', this).text().trim().replace(/\s*\n\s*/g, ', ').replace(/\s+/g, ' '),
+            description: jQuery('.wht_items', this).text().trim().replace(/\s*\n\s*/g, ', ')
         };
 
-        // Check if the row is an actual transaction (will always have a transactionRowDate element)
-        if (jQuery(this).find('.transactionRowDate')[0]){
-            // Check if the transaction was a credit to the account
-            if (jQuery(this).find('.transactionRowEvent').hasClass('walletcredit')){
-                transaction.price *=-1;
-                steamReceipt.credits +=1;
-            }
-
-            // Special case for Russian Rubles
-            if (transaction.currency.toString() === 'уб'){
-                transaction.currency = 'pуб';
-            }
-
-            // Find out how many currencies we're working with and sum them individually
-            var currency_string = transaction.currency.toString();
-            if ((jQuery.inArray(transaction.currency, steamReceipt.currencyList) === -1) && (transaction.currency)){
-                steamReceipt.currencyList.push(currency_string);
-                steamReceipt.currencyTotals[currency_string]=0;
-            }
-            if (transaction.currency){
-                steamReceipt.currencyTotals[currency_string] += transaction.price;
-            }
-
-            // Add up the transactions
-            if (transaction.price){
-            }
-            else{
-                steamReceipt.externalCount += 1;
-            }
-            steamReceipt.transactionCount += 1;
-
-            steamReceipt.transactions.push(transaction);
+        if (transaction.currency.indexOf('Credit') === transaction.currency.length - 6) {
+            transaction.price *= -1;
+            transaction.currency = transaction.currency.substr(0, transaction.currency.length - 6);
         }
+
+        if (!isNaN(transaction.price)) {
+            if (typeof(totals[transaction.currency]) === 'undefined') {
+                totals[transaction.currency] = [0, 0];
+            }
+            if (transaction.price >= 0) {
+                totals[transaction.currency][0] += transaction.price;
+            } else {
+                totals[transaction.currency][1] += transaction.price;
+            }
+        }
+
+        //console.log(transaction);
     });
 
     // Build the tables for the page
-    jQuery('#steam_gauge_wrapper').remove();
-    var transaction_type = steamReceipt.transactionsPage.replace('_', ' ');
-    jQuery('.pageheader').after('<div id="steam_gauge_wrapper"><p id="steam_gauge_receipt">You\'ve made '+steamReceipt.transactionCount+' '+transaction_type+' on Steam.<br/><br/>'+steamReceipt.externalCount+' of those are product redemptions on Steam for external purchases (Steam doesn\'t know how much you paid).<br/><br/>The total amount spent on your Steam account \(within Steam\) on '+transaction_type+' can be seen to the right. These totals include store purchases, wallet funding, gift purchases, and in-game purchases.<br/><br/>Your Steam wallet currently contains '+steamReceipt.wallet+'</p><table id="steam_gauge_receipt_table"><tbody><tr style="border-bottom: 1px solid #ddd;}"><th style="text-align:right;">Currency</th><th style="text-align:left;padding-left:0.5em;">Total Spent<br/>(negative values are credits)</th></tr></tbody></table><hr style="width:100%;margin:1em auto;clear:both;"><p style="display:block;width:100%;clear:both;text-align:center;font-weight:bold;">Steam Receipt was developed by <a href="http://www.mysteamgauge.com" style="text-decoration:underline;">Steam Gauge</a> and is in no way affiliated with Valve.</p></div>');
-    jQuery(steamReceipt.currencyList).each(function(){
-        jQuery('#steam_gauge_receipt_table tbody').append('<tr><td class="sg_col1">'+this+'</td><td class="sg_col2">'+Math.round(steamReceipt.currencyTotals[this]*100)/100+'</td></tr>');
-    });
-    jQuery('head').append('<style type="text/css">#steam_gauge_wrapper{width:100%;margin:1em 0px;padding: 1em;background-color:slategray;}#steam_gauge_receipt{width:50%;float:left;}#steam_gauge_receipt_table{width:50%;float:right;border-width: 0px !important;border-collapse: collapse !important;}.sg_col1{text-align:right;}.sg_col2{text-align:left;padding-left: 0.5em;}.youraccount_tabs{clear:both;}</style>');
-}
-else{
-    window.alert('This script only works on Steam transaction pages under:\n\nhttps://store.steampowered.com/account/');
+    var html = '<thead><tr><th>Currency</th><th>Debits</th><th>Credits</th><th>Total</th></tr></thead><tbody>';
+
+    for (currency in totals) {
+        html += '<tr><td>' + currency + '</td><td>' + totals[currency][0].toFixed(2) + '</td><td>' + totals[currency][1].toFixed(2) + '</td><td>' + (totals[currency][0] + totals[currency][1]).toFixed(2) + '</td></tr>';
+    }
+
+    html += '</tbody>';
+
+    jQuery('.wallet_history_click_hint').remove();
+    jQuery('.wallet_history_table').html(html);
 }
