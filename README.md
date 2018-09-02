@@ -1,6 +1,8 @@
 Steam Receipt Bookmarklet
 =========================
 
+**NOTE: THIS TOOL HAS BEEN SUPERCEDED BY NATIVE STEAM FUNCTIONALITY. AS A RESULT, THIS REPO WILL NO LONGER BE MAINTAINED. FOR DETAILS, SEE: https://www.mysteamgauge.com/receipt**
+
 Purpose
 -------
 Tools like [Steam Gauge](http://www.mysteamgauge.com) can only return the Steam store price of a game, and not the amount you actually paid for it. This is because Valve does not allow access to your Steam transaction history by outside parties. However, you can still see a transaction history of your account on Steam's website at: https://store.steampowered.com/account
